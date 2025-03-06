@@ -5,7 +5,7 @@ import 'prismjs/themes/prism-tomorrow.css'; // Dark theme
 import 'prismjs/components/prism-python'; // Python language support
 import '../styles/ChatPage.css';
 
-function ChatPage() {
+function ChatPageDataSources() {
   const location = useLocation();
   const initialQuery = location.state?.query || "What datasets should I analyze?";
   const [activeTab, setActiveTab] = useState('search');
@@ -30,7 +30,7 @@ function ChatPage() {
             <path d="M16 20L2 12V26L16 30V20Z" fill="#4CAF50" />
             <path d="M16 20L30 12V26L16 30V20Z" fill="#4CAF50" />
           </svg>
-          Real Estate Price Analysis
+          Stock Trend Analysis Based On Social Media Sentiment Analysis
         </div>
         <div className="chat-history">
           <div className="user-message">
@@ -38,18 +38,17 @@ function ChatPage() {
           </div>
           <div className="ai-message">
             <div className="message-content">
-              I'll help you analyze and update your housing database. Let me:
-              <br />
-              <br />
-              1. Search for relevant external data sources
-              <br />
-              2. Analyze their schemas for compatibility
-              <br />
-              3. Set up an ETL pipeline to merge the data
-              <br />
-              <br />
-              Which dataset would you like to analyze?
+              I have identified multiple social media platforms with a public API to pull data from. Please select which APIs you would like to use and confirm.
             </div>
+            <button
+              className="confirm-button"
+              onClick={() => {
+                // Assuming you want to navigate to the ChatPageGeneratePlan component
+                window.location.href = '/generate-plan';
+              }}
+            >
+              Confirm
+            </button>
           </div>
         </div>
         <div className="chat-input-container">
@@ -93,24 +92,33 @@ function ChatPage() {
                     <span className="browser-dot"></span>
                     <span className="browser-dot"></span>
                   </div>
-                  <div className="browser-address-bar">https://api.housing-data.org/search</div>
+                  <div className="browser-address-bar">denali/search/</div>
                 </div>
                 <div className="browser-content">
-                  <div className="panel-title">External Housing Data Sources</div>
+                  <div className="panel-title">External Data Sources</div>
                   <div className="api-card">
-                    <div className="api-card-title">Zillow Real Estate Data API</div>
-                    <p>Access to comprehensive real estate listings, property values, and historical pricing data.</p>
-                    <div className="api-meta">Format: JSON | Updated: Daily | Cost: Premium</div>
+                    <label className="api-card-label">
+                      <input type="checkbox" />
+                      <span className="api-card-title" style={{ marginLeft: '8px' }}>BlueSky API</span>
+                      <button className="send-button" style={{ float: 'right' }}>Schema</button>
+                    </label>
+                    <div className="api-meta">Format: JSON | Rate Limit: 10 requests per minute | Cost: Free</div>
                   </div>
                   <div className="api-card">
-                    <div className="api-card-title">US Housing & Urban Development (HUD) API</div>
-                    <p>Official government dataset with housing market trends, low-income housing stats, and regional metrics.</p>
-                    <div className="api-meta">Format: JSON/CSV | Updated: Monthly | Cost: Free</div>
+                    <label className="api-card-label">
+                      <input type="checkbox" />
+                      <span className="api-card-title" style={{ marginLeft: '8px' }}>Reddit API</span>
+                      <button className="send-button" style={{ float: 'right' }}>Schema</button>
+                    </label>
+                    <div className="api-meta">Format: JSON | Rate Limit: 100 requests per minute | Cost: Premium</div>
                   </div>
                   <div className="api-card">
-                    <div className="api-card-title">RealEstate.com Developer API</div>
-                    <p>Property listings, neighborhood data, and market analysis tools with historical comparisons.</p>
-                    <div className="api-meta">Format: JSON | Updated: Weekly | Cost: Tiered</div>
+                    <label className="api-card-label">
+                      <input type="checkbox" />
+                      <span className="api-card-title" style={{ marginLeft: '8px' }}>X API</span>
+                      <button className="send-button" style={{ float: 'right' }}>Schema</button>
+                    </label>
+                    <div className="api-meta">Format: JSON | Rate Limit: 100 requests per minute | Cost: Premium</div>
                   </div>
                 </div>
               </div>
@@ -226,4 +234,4 @@ clean_data.to_sql('seattle_properties')`}</code>
   );
 }
 
-export default ChatPage; 
+export default ChatPageDataSources;
