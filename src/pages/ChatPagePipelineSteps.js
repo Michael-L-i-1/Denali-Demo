@@ -5,7 +5,8 @@ import 'prismjs/themes/prism-tomorrow.css'; // Dark theme
 import 'prismjs/components/prism-python'; // Python language support
 import '../styles/ChatPage.css';
 import { twitterExtractorCode } from '../assets/code/twitterExtractorCode';
-import { dataValidationCode } from '../assets/code/dataValidationCode';
+import dataValidationCode from '../assets/code/dataValidationCode';
+import { marked } from 'marked';
 
 function ChatPagePipelineSteps() {
   const location = useLocation();
@@ -65,7 +66,7 @@ function ChatPagePipelineSteps() {
     if (cell.cell_type === 'markdown') {
       return (
         <div key={cell.execution_count} className="notebook-cell markdown">
-          <div dangerouslySetInnerHTML={{ __html: cell.source.join('').replace(/\n/g, '<br/>') }} />
+          <div dangerouslySetInnerHTML={{ __html: marked(cell.source.join('')) }} />
         </div>
       );
     } else if (cell.cell_type === 'code') {
@@ -280,12 +281,10 @@ function ChatPagePipelineSteps() {
               <div className="editor-content">
                 {(() => {
                   try {
-                    // First, remove the template literal backticks and parse the JSON
-                    const jsonString = dataValidationCode.replace(/^`|`$/g, '');
-                    const notebook = JSON.parse(jsonString);
-                    return notebook.cells.map(cell => renderNotebookCell(cell));
+                    // Import the JSON directly and render it
+                    return dataValidationCode.cells.map(cell => renderNotebookCell(cell));
                   } catch (error) {
-                    console.error('Error parsing notebook:', error);
+                    console.error('Error rendering notebook:', error);
                     return <div>Error loading notebook</div>;
                   }
                 })()}
