@@ -421,6 +421,8 @@
   margin-bottom: 8px;
   padding: 8px;
   border-radius: 4px;
+  opacity: 0;
+  transform: translateY(10px);
 }
 
 .status-item.success {
@@ -442,7 +444,12 @@
 
 .status-item.in-progress .status-icon {
   color: #FFC107;
-} 
+}
+
+.status-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
 
 /* Confirm Button */
 .confirm-button {
@@ -538,4 +545,19 @@
 
 .file-icon, .folder-icon {
   font-size: 0.9rem;
+}
+
+.loading-spinner {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 } 

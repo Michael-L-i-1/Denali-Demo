@@ -205,7 +205,9 @@ function ChatPageDataSources() {
             <button
               className="confirm-button"
               onClick={() => {
-                navigate('/pipeline-steps');
+                navigate('/pipeline-steps', { 
+                  state: { query: initialQuery }
+                });
               }}
             >
               Confirm

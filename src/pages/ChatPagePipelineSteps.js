@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Prism from 'prismjs';
 import 'prismjs/themes/prism-tomorrow.css'; // Dark theme
 import 'prismjs/components/prism-python'; // Python language support
@@ -7,12 +7,30 @@ import '../styles/ChatPage.css';
 
 function ChatPagePipelineSteps() {
   const location = useLocation();
+  const navigate = useNavigate();
   const initialQuery = location.state?.query || "What datasets should I analyze?";
   const [activeTab, setActiveTab] = useState('search');
+  const [visibleItems, setVisibleItems] = useState(0);
 
   useEffect(() => {
     Prism.highlightAll();
   }, [activeTab]);
+
+  useEffect(() => {
+    const totalItems = 9; // Total number of status items
+    let currentItem = 0;
+    
+    const interval = setInterval(() => {
+      if (currentItem < totalItems) {
+        setVisibleItems(prev => prev + 1);
+        currentItem++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 200);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="chat-page">
@@ -40,7 +58,40 @@ function ChatPagePipelineSteps() {
             <div className="message-content">
               I have identified multiple social media platforms with a public API to pull data from. Please select which APIs you would like to use and confirm.
             </div>
+            <button
+              className="confirm-button"
+              style={{ 
+                opacity: 0.5, 
+                cursor: 'default' 
+              }}
+              disabled
+            >
+              Confirmed
+            </button>
           </div>
+          {visibleItems < 9 ? (
+            <div className="ai-message">
+              <div className="message-content">
+                <div className="loading-spinner">⟳</div>
+                Generating execution plan...
+              </div>
+            </div>
+          ) : (
+            <div className="ai-message">
+              <div className="message-content">
+                I have generated an execution plan for the pipeline. Please review and confirm.
+              </div>
+              <button
+                className="confirm-button"
+                onClick={() => {
+                  navigate('/pipeline-steps');
+                }}
+              >
+                {/* When clicked, execute each plan item sequentially */}
+                Confirm
+              </button>
+            </div>
+          )}
         </div>
         <div className="chat-input-container">
           <input
@@ -54,8 +105,7 @@ function ChatPagePipelineSteps() {
       <div className="visualization-side">
         <div className="execution-plan">
           <div className="etl-panel">
-            <div className="panel-title">ETL Pipeline</div>
-            <div className="code-block">
+            <div className="code-block" style={{display: 'none'}}>
               <pre>
                 <code className="language-python">{`# Import required libraries
 from zillow_api import ZillowClient
@@ -86,31 +136,39 @@ clean_data.to_sql('seattle_properties')`}</code>
             </div>
             <div className="etl-status">
               <div className="status-header">Execution Plan</div>
-              <div className="status-item success">
-                <span className="status-icon">✓</span>
-                <span>Sync Reddit Data to S3 Data Lake with Airbyte</span>
-              </div>
-              <div className="status-item success">
-                <span className="status-icon">✓</span>
-                <span>Data extraction completed - 5,283 records</span>
-              </div>
-              <div className="status-item success">
-                <span className="status-icon">✓</span>
-                <span>Data transformation completed - 5,104 valid records</span>
-              </div>
-              <div className="status-item in-progress">
-                <span className="status-icon">⟳</span>
-                <span>Database loading in progress...</span>
-              </div>
+              {[
+                "Sync Reddit Data to S3 Data Lake with Airbyte",
+                "Build Data Extractor for X API",
+                "Sync X Data to S3 Data Lake",
+                "Load Data From S3 into Snowflake",
+                "Data Cleaning and Transformation using dbt",
+                "Data Exploration and Validation",
+                "Perform Sentiment Analysis",
+                "Productionize Pipeline",
+                "Deploy Pipeline"
+              ].map((text, index) => (
+                <div 
+                  key={index}
+                  className={`status-item in-progress ${index < visibleItems ? 'visible' : ''}`}
+                  style={{
+                    opacity: index < visibleItems ? 1 : 0,
+                    transform: index < visibleItems ? 'translateY(0)' : 'translateY(10px)',
+                    transition: 'opacity 0.3s ease, transform 0.3s ease'
+                  }}
+                >
+                  <span className="status-icon">⟳</span>
+                  <span>{text}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </div>
-      <div className="workspace-side">
+      <div className="workspace-side" style={{ minWidth: '14vw' }}>
           <div className="workspace-header">
             <span>WORKSPACE</span>
           </div>
-          <div className="workspace-explorer">
+          <div className="workspace-explorer" style={{ display: 'none' }}>
             <div className="folder">
               <div className="folder-name">
                 <span className="folder-icon">📁</span>
