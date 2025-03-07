@@ -12,6 +12,11 @@ function ChatPagePipelineSteps() {
   const initialQuery = location.state?.query || "What datasets should I analyze?";
   const [activeTab, setActiveTab] = useState('search');
   const [visibleItems, setVisibleItems] = useState(0);
+  const [activeSpinners, setActiveSpinners] = useState([]);
+  const [completedItems, setCompletedItems] = useState([]);
+
+  const processingTimes = [5, 7, 11, 20, 25]; // Time in seconds for each step
+  const stopIndex = 5;
 
   useEffect(() => {
     Prism.highlightAll();
@@ -32,6 +37,21 @@ function ChatPagePipelineSteps() {
 
     return () => clearInterval(interval);
   }, []);
+
+  const startPipelineExecution = () => {
+    // let currentIndex = 0;
+
+    for (let i = 0; i < processingTimes.length; i++) {
+      setActiveSpinners(prev => [...prev, i]);
+
+      const timeInMs = processingTimes[i] * 1000;
+      
+      setTimeout(() => {
+        setCompletedItems(prev => [...prev, i]);
+        setActiveSpinners(prev => prev.filter(j => j !== i));
+      }, timeInMs);
+    }
+  };
 
   return (
     <div className="chat-page">
@@ -85,11 +105,8 @@ function ChatPagePipelineSteps() {
               <button
                 className="confirm-button"
                 id="confirm-plan-button"
-                onClick={() => {
-                  navigate('/pipeline-steps');
-                }}
+                onClick={startPipelineExecution}
               >
-                {/* When clicked, execute each plan item sequentially */}
                 Confirm
               </button>
             </div>
@@ -122,7 +139,9 @@ function ChatPagePipelineSteps() {
               ].map((item, index) => (
                 <div 
                   key={item.id}
-                  className={`status-item in-progress ${index < visibleItems ? 'visible' : ''}`}
+                  className={`status-item in-progress ${index < visibleItems ? 'visible' : ''} ${
+                    completedItems.includes(index) ? 'completed' : ''
+                  }`}
                   style={{
                     opacity: index < visibleItems ? 1 : 0,
                     transform: index < visibleItems ? 'translateY(0)' : 'translateY(10px)',
@@ -137,7 +156,9 @@ function ChatPagePipelineSteps() {
                     }
                   }}
                 >
-                  <span className="status-icon">⟳</span>
+                  <span className={`status-icon ${activeSpinners.includes(index) ? 'spinning' : ''}`}>
+                    {completedItems.includes(index) ? '✓' : '⟳'}
+                  </span>
                   <span>{item.text}</span>
                 </div>
               ))}

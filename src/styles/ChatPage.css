@@ -437,8 +437,12 @@
 }
 
 .status-icon {
+  display: inline-block;
   margin-right: 8px;
-  font-weight: bold;
+}
+
+.status-icon.spinning {
+  animation: spin 1s linear infinite;
 }
 
 .status-item.success .status-icon {
@@ -452,6 +456,15 @@
 .status-item.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+.status-item.completed {
+  color: #4CAF50;
+}
+
+.status-item.completed .status-icon {
+  color: #4CAF50; /* Make checkmark green */
+  animation: none; /* Stop spinning when completed */
 }
 
 /* Confirm Button */
