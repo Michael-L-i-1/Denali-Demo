@@ -4,6 +4,7 @@ import Prism from 'prismjs';
 import 'prismjs/themes/prism-tomorrow.css'; // Dark theme
 import 'prismjs/components/prism-python'; // Python language support
 import '../styles/ChatPage.css';
+import airbyteIcon from '../images/airbyte-inc-logo-vector.svg';
 
 function ChatPageDataSources() {
   const location = useLocation();
@@ -232,45 +233,56 @@ function ChatPageDataSources() {
               <div className="browser-address-bar">denali/search/</div>
             </div>
             <div className="browser-content">
+              <div className="panel-title">External Data Sources</div>
               <div className="api-card">
                 <label className="api-card-label">
-                  <input type="checkbox" />
-                  <span className="api-card-title" style={{ marginLeft: '8px' }}>BlueSky API</span>
-                  <button 
-                    className="send-button" 
-                    style={{ float: 'right' }}
-                    onClick={() => handleSchemaClick('bluesky')}
-                  >
-                    Schema
-                  </button>
+                  <div className="api-card-left">
+                    <input type="checkbox" />
+                    <span className="api-card-title">BlueSky API</span>
+                  </div>
+                  <div className="api-card-actions">
+                    <button 
+                      className="send-button"
+                      onClick={() => handleSchemaClick('bluesky')}
+                    >
+                      Schema
+                    </button>
+                  </div>
                 </label>
                 <div className="api-meta">Format: JSON | Rate Limit: 10 requests per minute | Cost: Free</div>
               </div>
               <div className="api-card">
                 <label className="api-card-label">
-                  <input type="checkbox" />
-                  <span className="api-card-title" style={{ marginLeft: '8px' }}>Reddit API</span>
-                  <button 
-                    className="send-button" 
-                    style={{ float: 'right' }}
-                    onClick={() => handleSchemaClick('reddit')}
-                  >
-                    Schema
-                  </button>
+                  <div className="api-card-left">
+                    <input type="checkbox" />
+                    <span className="api-card-title">Reddit API</span>
+                  </div>
+                  <div className="api-card-actions">
+                    <img src={airbyteIcon} alt="Airbyte" className="airbyte-icon" />
+                    <button 
+                      className="send-button"
+                      onClick={() => handleSchemaClick('reddit')}
+                    >
+                      Schema
+                    </button>
+                  </div>
                 </label>
                 <div className="api-meta">Format: JSON | Rate Limit: 100 requests per minute | Cost: Premium</div>
               </div>
               <div className="api-card">
                 <label className="api-card-label">
-                  <input type="checkbox" />
-                  <span className="api-card-title" style={{ marginLeft: '8px' }}>X API</span>
-                  <button 
-                    className="send-button" 
-                    style={{ float: 'right' }}
-                    onClick={() => handleSchemaClick('xapi')}
-                  >
-                    Schema
-                  </button>
+                  <div className="api-card-left">
+                    <input type="checkbox" />
+                    <span className="api-card-title">X API</span>
+                  </div>
+                  <div className="api-card-actions">
+                    <button 
+                      className="send-button"
+                      onClick={() => handleSchemaClick('xapi')}
+                    >
+                      Schema
+                    </button>
+                  </div>
                 </label>
                 <div className="api-meta">Format: JSON | Rate Limit: 100 requests per minute | Cost: Premium</div>
               </div>
