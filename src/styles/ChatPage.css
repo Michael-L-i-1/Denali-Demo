@@ -663,3 +663,71 @@
   font-size: 14px;
   line-height: 1.5;
 }
+
+.action-required {
+  margin-left: 8px;
+  padding: 2px 8px;
+  background-color: #ff4444;
+  color: white;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.notebook-editor {
+  width: 100%;
+  max-width: 60vw;
+  background-color: #1e1e1e;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: none;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden;
+}
+
+.notebook-editor .editor-header {
+  background-color: #2d2d2d;
+  padding: 0 12px;
+  height: 32px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #404040;
+}
+
+.notebook-editor .editor-content {
+  padding: 16px;
+  max-height: 60vh;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.notebook-editor .editor-content::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.notebook-editor .editor-content::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+.notebook-editor .editor-content::-webkit-scrollbar-thumb {
+  background-color: #424242;
+  border-radius: 6px;
+  border: 3px solid #1e1e1e;
+}
+
+.notebook-editor pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.notebook-editor code {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}

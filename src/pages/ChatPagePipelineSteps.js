@@ -5,6 +5,7 @@ import 'prismjs/themes/prism-tomorrow.css'; // Dark theme
 import 'prismjs/components/prism-python'; // Python language support
 import '../styles/ChatPage.css';
 import { twitterExtractorCode } from '../assets/code/twitterExtractorCode';
+import { dataValidationCode } from '../assets/code/dataValidationCode';
 
 function ChatPagePipelineSteps() {
   const location = useLocation();
@@ -14,9 +15,12 @@ function ChatPagePipelineSteps() {
   const [visibleItems, setVisibleItems] = useState(0);
   const [activeSpinners, setActiveSpinners] = useState([]);
   const [completedItems, setCompletedItems] = useState([]);
+  const [showActionRequired, setShowActionRequired] = useState(false);
 
-  const processingTimes = [5, 7, 11, 20, 25]; // Time in seconds for each step
+  const processingTimes = [1,2,3,4,5]; // Time in seconds for each step
+  const totalSteps = 9;
   const stopIndex = 5;
+  const dataValidationStopTimer = 6;
 
   useEffect(() => {
     Prism.highlightAll();
@@ -39,17 +43,21 @@ function ChatPagePipelineSteps() {
   }, []);
 
   const startPipelineExecution = () => {
-    // let currentIndex = 0;
+    setTimeout(() => {
+      setShowActionRequired(true);
+    }, dataValidationStopTimer * 1000);
 
-    for (let i = 0; i < processingTimes.length; i++) {
+    for (let i = 0; i < totalSteps; i++) {
       setActiveSpinners(prev => [...prev, i]);
 
       const timeInMs = processingTimes[i] * 1000;
       
-      setTimeout(() => {
-        setCompletedItems(prev => [...prev, i]);
-        setActiveSpinners(prev => prev.filter(j => j !== i));
-      }, timeInMs);
+      if (i < stopIndex) {
+        setTimeout(() => {
+          setCompletedItems(prev => [...prev, i]);
+          setActiveSpinners(prev => prev.filter(j => j !== i));
+        }, timeInMs);
+      }
     }
   };
 
@@ -105,9 +113,40 @@ function ChatPagePipelineSteps() {
               <button
                 className="confirm-button"
                 id="confirm-plan-button"
-                onClick={startPipelineExecution}
+                onClick={() => {
+                  startPipelineExecution();
+                  const button = document.getElementById('confirm-plan-button');
+                  button.disabled = true;
+                  button.textContent = 'Confirmed';
+                  button.style.opacity = 0.5;
+                }}
+                style={{
+                  cursor: 'pointer'
+                }}
               >
                 Confirm
+              </button>
+            </div>
+          )}
+          {showActionRequired && (
+            <div className="ai-message">
+              <div className="message-content">
+                Data Exploration and Validation step requires your action to proceed. Please review and resolve.
+              </div>
+              <button
+                className="confirm-button"
+                id="resolve-button"
+                onClick={() => {
+                  const button = document.getElementById('resolve-button');
+                  button.disabled = true;
+                  button.textContent = 'Resolved';
+                  button.style.opacity = 0.5;
+                }}
+                style={{
+                  cursor: 'pointer'
+                }}
+              >
+                Resolve
               </button>
             </div>
           )}
@@ -151,8 +190,13 @@ function ChatPagePipelineSteps() {
                   onClick={() => {
                     if (item.id === 'build-x-extractor') {
                       document.querySelector('.code-editor').style.display = 'block';
+                      document.querySelector('.notebook-editor').style.display = 'none';
+                    } else if (item.id === 'data-validation') {
+                      document.querySelector('.code-editor').style.display = 'none';
+                      document.querySelector('.notebook-editor').style.display = 'block';
                     } else {
                       document.querySelector('.code-editor').style.display = 'none';
+                      document.querySelector('.notebook-editor').style.display = 'none';
                     }
                   }}
                 >
@@ -160,6 +204,9 @@ function ChatPagePipelineSteps() {
                     {completedItems.includes(index) ? '✓' : '⟳'}
                   </span>
                   <span>{item.text}</span>
+                  {showActionRequired && item.id === 'data-validation' && (
+                    <span className="action-required">Action Required</span>
+                  )}
                 </div>
               ))}
             </div>
@@ -178,6 +225,24 @@ function ChatPagePipelineSteps() {
               <div className="editor-content">
                 <pre>
                   <code className="language-python">{twitterExtractorCode}</code>
+                </pre>
+              </div>
+            </div>
+            <div className="notebook-editor" style={{display: 'none'}}>
+              <div className="editor-header">
+                <span className="file-name">data_validation.ipynb</span>
+                <button 
+                  className="close-button"
+                  onClick={() => {
+                    document.querySelector('.notebook-editor').style.display = 'none';
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+              <div className="editor-content">
+                <pre>
+                  <code className="language-python">{dataValidationCode}</code>
                 </pre>
               </div>
             </div>
