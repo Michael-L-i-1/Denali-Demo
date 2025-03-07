@@ -8,11 +8,171 @@ import '../styles/ChatPage.css';
 function ChatPageDataSources() {
   const location = useLocation();
   const initialQuery = location.state?.query || "What datasets should I analyze?";
-  const [activeTab, setActiveTab] = useState('search');
+  const [selectedSchema, setSelectedSchema] = useState(null);
+  const [showSchemaModal, setShowSchemaModal] = useState(false);
 
   useEffect(() => {
     Prism.highlightAll();
-  }, [activeTab]);
+  }, [showSchemaModal]);
+
+  const handleSchemaClick = (schemaType) => {
+    setSelectedSchema(schemaType);
+    setShowSchemaModal(true);
+  };
+
+  // const closeSchemaModal = () => {
+  //   setShowSchemaModal(false);
+  //   // Small delay to allow animation to complete before changing schema content
+  //   setTimeout(() => setSelectedSchema(null), 300);
+  // };
+
+  // Schema data for each API
+  const schemaContent = {
+    bluesky: (
+      <div className="schema-content">
+        <div className="schema-field">
+          <span className="field-name">post_id</span>
+          <span className="field-type">string</span>
+        </div>
+        <div className="schema-field">
+          <span className="field-name">author</span>
+          <span className="field-type">object</span>
+        </div>
+        <div className="schema-field nested">
+          <span className="field-name">did</span>
+          <span className="field-type">string</span>
+        </div>
+        <div className="schema-field nested">
+          <span className="field-name">handle</span>
+          <span className="field-type">string</span>
+        </div>
+        <div className="schema-field">
+          <span className="field-name">content</span>
+          <span className="field-type">object</span>
+        </div>
+        <div className="schema-field nested">
+          <span className="field-name">text</span>
+          <span className="field-type">string</span>
+        </div>
+        <div className="schema-field nested">
+          <span className="field-name">facets</span>
+          <span className="field-type">array</span>
+        </div>
+        <div className="schema-field">
+          <span className="field-name">indexedAt</span>
+          <span className="field-type">string (ISO date)</span>
+        </div>
+        <div className="schema-field">
+          <span className="field-name">likeCount</span>
+          <span className="field-type">integer</span>
+        </div>
+        <div className="schema-field">
+          <span className="field-name">repostCount</span>
+          <span className="field-type">integer</span>
+        </div>
+      </div>
+    ),
+    reddit: (
+      <div className="schema-content">
+        <div className="schema-field">
+          <span className="field-name">id</span>
+          <span className="field-type">string</span>
+        </div>
+        <div className="schema-field">
+          <span className="field-name">subreddit</span>
+          <span className="field-type">string</span>
+        </div>
+        <div className="schema-field">
+          <span className="field-name">title</span>
+          <span className="field-type">string</span>
+        </div>
+        <div className="schema-field">
+          <span className="field-name">author</span>
+          <span className="field-type">string</span>
+        </div>
+        <div className="schema-field">
+          <span className="field-name">selftext</span>
+          <span className="field-type">string</span>
+        </div>
+        <div className="schema-field">
+          <span className="field-name">created_utc</span>
+          <span className="field-type">integer (unix timestamp)</span>
+        </div>
+        <div className="schema-field">
+          <span className="field-name">ups</span>
+          <span className="field-type">integer</span>
+        </div>
+        <div className="schema-field">
+          <span className="field-name">downs</span>
+          <span className="field-type">integer</span>
+        </div>
+        <div className="schema-field">
+          <span className="field-name">num_comments</span>
+          <span className="field-type">integer</span>
+        </div>
+        <div className="schema-field">
+          <span className="field-name">post_hint</span>
+          <span className="field-type">string</span>
+        </div>
+      </div>
+    ),
+    xapi: (
+      <div className="schema-content">
+        <div className="schema-field">
+          <span className="field-name">id</span>
+          <span className="field-type">string</span>
+        </div>
+        <div className="schema-field">
+          <span className="field-name">text</span>
+          <span className="field-type">string</span>
+        </div>
+        <div className="schema-field">
+          <span className="field-name">user</span>
+          <span className="field-type">object</span>
+        </div>
+        <div className="schema-field nested">
+          <span className="field-name">id</span>
+          <span className="field-type">string</span>
+        </div>
+        <div className="schema-field nested">
+          <span className="field-name">name</span>
+          <span className="field-type">string</span>
+        </div>
+        <div className="schema-field nested">
+          <span className="field-name">username</span>
+          <span className="field-type">string</span>
+        </div>
+        <div className="schema-field nested">
+          <span className="field-name">verified</span>
+          <span className="field-type">boolean</span>
+        </div>
+        <div className="schema-field">
+          <span className="field-name">created_at</span>
+          <span className="field-type">string (ISO date)</span>
+        </div>
+        <div className="schema-field">
+          <span className="field-name">public_metrics</span>
+          <span className="field-type">object</span>
+        </div>
+        <div className="schema-field nested">
+          <span className="field-name">retweet_count</span>
+          <span className="field-type">integer</span>
+        </div>
+        <div className="schema-field nested">
+          <span className="field-name">reply_count</span>
+          <span className="field-type">integer</span>
+        </div>
+        <div className="schema-field nested">
+          <span className="field-name">like_count</span>
+          <span className="field-type">integer</span>
+        </div>
+        <div className="schema-field nested">
+          <span className="field-name">quote_count</span>
+          <span className="field-type">integer</span>
+        </div>
+      </div>
+    )
+  };
 
   return (
     <div className="chat-page">
@@ -61,170 +221,74 @@ function ChatPageDataSources() {
         </div>
       </div>
       <div className="visualization-side">
-        <div className="tabs-container">
-          <button 
-            className={`tab ${activeTab === 'search' ? 'active' : ''}`}
-            onClick={() => setActiveTab('search')}
-          >
-            Search
-          </button>
-          <button 
-            className={`tab ${activeTab === 'schemas' ? 'active' : ''}`}
-            onClick={() => setActiveTab('schemas')}
-          >
-            Schemas
-          </button>
-          <button 
-            className={`tab ${activeTab === 'etl' ? 'active' : ''}`}
-            onClick={() => setActiveTab('etl')}
-          >
-            ETL
-          </button>
-        </div>
-        
-        <div className="tab-content">
-          {activeTab === 'search' && (
-            <div className="search-panel">
-              <div className="browser-mockup">
-                <div className="browser-header">
-                  <div className="browser-controls">
-                    <span className="browser-dot"></span>
-                    <span className="browser-dot"></span>
-                    <span className="browser-dot"></span>
-                  </div>
-                  <div className="browser-address-bar">denali/search/</div>
-                </div>
-                <div className="browser-content">
-                  <div className="panel-title">External Data Sources</div>
-                  <div className="api-card">
-                    <label className="api-card-label">
-                      <input type="checkbox" />
-                      <span className="api-card-title" style={{ marginLeft: '8px' }}>BlueSky API</span>
-                      <button className="send-button" style={{ float: 'right' }}>Schema</button>
-                    </label>
-                    <div className="api-meta">Format: JSON | Rate Limit: 10 requests per minute | Cost: Free</div>
-                  </div>
-                  <div className="api-card">
-                    <label className="api-card-label">
-                      <input type="checkbox" />
-                      <span className="api-card-title" style={{ marginLeft: '8px' }}>Reddit API</span>
-                      <button className="send-button" style={{ float: 'right' }}>Schema</button>
-                    </label>
-                    <div className="api-meta">Format: JSON | Rate Limit: 100 requests per minute | Cost: Premium</div>
-                  </div>
-                  <div className="api-card">
-                    <label className="api-card-label">
-                      <input type="checkbox" />
-                      <span className="api-card-title" style={{ marginLeft: '8px' }}>X API</span>
-                      <button className="send-button" style={{ float: 'right' }}>Schema</button>
-                    </label>
-                    <div className="api-meta">Format: JSON | Rate Limit: 100 requests per minute | Cost: Premium</div>
-                  </div>
-                </div>
+        <div className="search-panel">
+          <div className="browser-mockup">
+            <div className="browser-header">
+              <div className="browser-controls">
+                <span className="browser-dot"></span>
+                <span className="browser-dot"></span>
+                <span className="browser-dot"></span>
+              </div>
+              <div className="browser-address-bar">denali/search/</div>
+            </div>
+            <div className="browser-content">
+              <div className="api-card">
+                <label className="api-card-label">
+                  <input type="checkbox" />
+                  <span className="api-card-title" style={{ marginLeft: '8px' }}>BlueSky API</span>
+                  <button 
+                    className="send-button" 
+                    style={{ float: 'right' }}
+                    onClick={() => handleSchemaClick('bluesky')}
+                  >
+                    Schema
+                  </button>
+                </label>
+                <div className="api-meta">Format: JSON | Rate Limit: 10 requests per minute | Cost: Free</div>
+              </div>
+              <div className="api-card">
+                <label className="api-card-label">
+                  <input type="checkbox" />
+                  <span className="api-card-title" style={{ marginLeft: '8px' }}>Reddit API</span>
+                  <button 
+                    className="send-button" 
+                    style={{ float: 'right' }}
+                    onClick={() => handleSchemaClick('reddit')}
+                  >
+                    Schema
+                  </button>
+                </label>
+                <div className="api-meta">Format: JSON | Rate Limit: 100 requests per minute | Cost: Premium</div>
+              </div>
+              <div className="api-card">
+                <label className="api-card-label">
+                  <input type="checkbox" />
+                  <span className="api-card-title" style={{ marginLeft: '8px' }}>X API</span>
+                  <button 
+                    className="send-button" 
+                    style={{ float: 'right' }}
+                    onClick={() => handleSchemaClick('xapi')}
+                  >
+                    Schema
+                  </button>
+                </label>
+                <div className="api-meta">Format: JSON | Rate Limit: 100 requests per minute | Cost: Premium</div>
               </div>
             </div>
-          )}
+          </div>
           
-          {activeTab === 'schemas' && (
-            <div className="schema-panel">
-              <div className="panel-title">Schema</div>
+          {/* Schema Section */}
+          {selectedSchema && (
+            <div className="schema-section">
+              <div className="schema-header">
+                <h3>
+                  {selectedSchema === 'bluesky' ? 'BlueSky API Schema' : 
+                   selectedSchema === 'reddit' ? 'Reddit API Schema' : 
+                   'X API Schema'}
+                </h3>
+              </div>
               <div className="schema-card">
-                <div className="schema-content">
-                  <div className="schema-field">
-                    <span className="field-name">id</span>
-                    <span className="field-type">string</span>
-                  </div>
-                  <div className="schema-field">
-                    <span className="field-name">address</span>
-                    <span className="field-type">object</span>
-                  </div>
-                  <div className="schema-field nested">
-                    <span className="field-name">street</span>
-                    <span className="field-type">string</span>
-                  </div>
-                  <div className="schema-field nested">
-                    <span className="field-name">city</span>
-                    <span className="field-type">string</span>
-                  </div>
-                  <div className="schema-field">
-                    <span className="field-name">square_footage</span>
-                    <span className="field-type">object</span>
-                  </div>
-                  <div className="schema-field nested">
-                    <span className="field-name">exterior</span>
-                    <span className="field-type">integer</span>
-                  </div>
-                  <div className="schema-field nested">
-                    <span className="field-name">interior</span>
-                    <span className="field-type">integer</span>
-                  </div>
-                  <div className="schema-field">
-                    <span className="field-name">price</span>
-                    <span className="field-type">object</span>
-                  </div>
-                  <div className="schema-field nested">
-                    <span className="field-name">current</span>
-                    <span className="field-type">integer</span>
-                  </div>
-                  <div className="schema-field nested">
-                    <span className="field-name">history</span>
-                    <span className="field-type">array</span>
-                  </div>
-                  <div className="schema-field nested">
-                    <span className="field-name">estimated</span>
-                    <span className="field-type">integer</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {activeTab === 'etl' && (
-            <div className="etl-panel">
-              <div className="panel-title">ETL Pipeline</div>
-              <div className="code-block">
-                <pre>
-                  <code className="language-python">{`# Import required libraries
-from zillow_api import ZillowClient
-import pandas as pd
-
-def extract_housing_data():
-    """Extract data from Zillow API for Seattle area"""
-    client = ZillowClient(api_key="****")
-    return client.get_properties(city="Seattle")
-
-def transform_data(properties):
-    """Clean and transform raw property data"""
-    df = pd.DataFrame(properties)
-    
-    # Calculate price per sqft
-    df['price_per_sqft'] = df['price.current'] / df['square_footage.interior']
-    
-    # Add market indicators
-    df['is_good_value'] = df['price.current'] < df['price.estimated']
-    
-    return df
-
-# Execute pipeline
-raw_data = extract_housing_data()
-clean_data = transform_data(raw_data)
-clean_data.to_sql('seattle_properties')`}</code>
-                </pre>
-              </div>
-              <div className="etl-status">
-                <div className="status-header">Pipeline Status</div>
-                <div className="status-item success">
-                  <span className="status-icon">✓</span>
-                  <span>Data extraction completed - 5,283 records</span>
-                </div>
-                <div className="status-item success">
-                  <span className="status-icon">✓</span>
-                  <span>Data transformation completed - 5,104 valid records</span>
-                </div>
-                <div className="status-item in-progress">
-                  <span className="status-icon">⟳</span>
-                  <span>Database loading in progress...</span>
-                </div>
+                {schemaContent[selectedSchema]}
               </div>
             </div>
           )}
