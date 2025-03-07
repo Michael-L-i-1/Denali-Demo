@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Prism from 'prismjs';
 import 'prismjs/themes/prism-tomorrow.css'; // Dark theme
 import 'prismjs/components/prism-python'; // Python language support
@@ -7,6 +7,7 @@ import '../styles/ChatPage.css';
 
 function ChatPageDataSources() {
   const location = useLocation();
+  const navigate = useNavigate();
   const initialQuery = location.state?.query || "What datasets should I analyze?";
   const [activeTab, setActiveTab] = useState('search');
 
@@ -43,8 +44,7 @@ function ChatPageDataSources() {
             <button
               className="confirm-button"
               onClick={() => {
-                // Assuming you want to navigate to the ChatPageGeneratePlan component
-                window.location.href = '/generate-plan';
+                navigate('/pipeline-steps');
               }}
             >
               Confirm

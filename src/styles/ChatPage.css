@@ -412,4 +412,53 @@
 
 .status-item.in-progress .status-icon {
   color: #FFC107;
+}
+
+/* Workspace styles */
+.workspace-side {
+  flex: 0.15;
+  background-color: var(--secondary-dark);
+  border-left: 1px solid #444;
+  display: flex;
+  flex-direction: column;
+}
+
+.workspace-header {
+  padding: 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #888;
+  background-color: var(--primary-dark);
+  border-bottom: 1px solid #444;
+}
+
+.workspace-explorer {
+  padding: 0.5rem;
+}
+
+.folder {
+  margin-bottom: 0.5rem;
+}
+
+.folder-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-light);
+  font-size: 0.9rem;
+  padding: 0.2rem 0;
+}
+
+.indented {
+  margin-left: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-light);
+  font-size: 0.9rem;
+  padding: 0.2rem 0;
+}
+
+.file-icon, .folder-icon {
+  font-size: 0.9rem;
 } 
