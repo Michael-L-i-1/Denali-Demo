@@ -4,6 +4,7 @@ import Prism from 'prismjs';
 import 'prismjs/themes/prism-tomorrow.css'; // Dark theme
 import 'prismjs/components/prism-python'; // Python language support
 import '../styles/ChatPage.css';
+import { twitterExtractorCode } from '../assets/code/twitterExtractorCode';
 
 function ChatPagePipelineSteps() {
   const location = useLocation();
@@ -83,6 +84,7 @@ function ChatPagePipelineSteps() {
               </div>
               <button
                 className="confirm-button"
+                id="confirm-plan-button"
                 onClick={() => {
                   navigate('/pipeline-steps');
                 }}
@@ -105,61 +107,58 @@ function ChatPagePipelineSteps() {
       <div className="visualization-side">
         <div className="execution-plan">
           <div className="etl-panel">
-            <div className="code-block" style={{display: 'none'}}>
-              <pre>
-                <code className="language-python">{`# Import required libraries
-from zillow_api import ZillowClient
-import pandas as pd
-
-def extract_housing_data():
-    """Extract data from Zillow API for Seattle area"""
-    client = ZillowClient(api_key="****")
-    return client.get_properties(city="Seattle")
-
-def transform_data(properties):
-    """Clean and transform raw property data"""
-    df = pd.DataFrame(properties)
-    
-    # Calculate price per sqft
-    df['price_per_sqft'] = df['price.current'] / df['square_footage.interior']
-    
-    # Add market indicators
-    df['is_good_value'] = df['price.current'] < df['price.estimated']
-    
-    return df
-
-# Execute pipeline
-raw_data = extract_housing_data()
-clean_data = transform_data(raw_data)
-clean_data.to_sql('seattle_properties')`}</code>
-              </pre>
-            </div>
             <div className="etl-status">
               <div className="status-header">Execution Plan</div>
               {[
-                "Sync Reddit Data to S3 Data Lake with Airbyte",
-                "Build Data Extractor for X API",
-                "Sync X Data to S3 Data Lake",
-                "Load Data From S3 into Snowflake",
-                "Data Cleaning and Transformation using dbt",
-                "Data Exploration and Validation",
-                "Perform Sentiment Analysis",
-                "Productionize Pipeline",
-                "Deploy Pipeline"
-              ].map((text, index) => (
+                {id: "sync-reddit", text: "Sync Reddit Data to S3 Data Lake with Airbyte"},
+                {id: "build-x-extractor", text: "Build Data Extractor for X API"},
+                {id: "sync-x", text: "Sync X Data to S3 Data Lake"},
+                {id: "load-snowflake", text: "Load Data From S3 into Snowflake"},
+                {id: "dbt-transform", text: "Data Cleaning and Transformation using dbt"},
+                {id: "data-validation", text: "Data Exploration and Validation"},
+                {id: "sentiment", text: "Perform Sentiment Analysis"},
+                {id: "productionize", text: "Productionize Pipeline"},
+                {id: "deploy", text: "Deploy Pipeline"}
+              ].map((item, index) => (
                 <div 
-                  key={index}
+                  key={item.id}
                   className={`status-item in-progress ${index < visibleItems ? 'visible' : ''}`}
                   style={{
                     opacity: index < visibleItems ? 1 : 0,
                     transform: index < visibleItems ? 'translateY(0)' : 'translateY(10px)',
-                    transition: 'opacity 0.3s ease, transform 0.3s ease'
+                    transition: 'opacity 0.3s ease, transform 0.3s ease',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => {
+                    if (item.id === 'build-x-extractor') {
+                      document.querySelector('.code-editor').style.display = 'block';
+                    } else {
+                      document.querySelector('.code-editor').style.display = 'none';
+                    }
                   }}
                 >
                   <span className="status-icon">⟳</span>
-                  <span>{text}</span>
+                  <span>{item.text}</span>
                 </div>
               ))}
+            </div>
+            <div className="code-editor" style={{display: 'none'}}>
+              <div className="editor-header">
+                <span className="file-name">twitter_extractor.py</span>
+                <button 
+                  className="close-button"
+                  onClick={() => {
+                    document.querySelector('.code-editor').style.display = 'none';
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+              <div className="editor-content">
+                <pre>
+                  <code className="language-python">{twitterExtractorCode}</code>
+                </pre>
+              </div>
             </div>
           </div>
         </div>

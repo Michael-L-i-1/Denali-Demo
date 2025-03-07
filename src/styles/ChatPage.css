@@ -405,8 +405,11 @@
   background-color: var(--primary-dark);
   border-radius: 5px;
   padding: 1rem;
-  margin-top: 1rem;
+  /* margin-top: 1rem; */
   border: 1px solid #444;
+  max-width: 60vw;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .status-header {
@@ -560,4 +563,90 @@
   to {
     transform: rotate(360deg);
   }
-} 
+}
+
+.code-editor {
+  width: 100%;
+  max-width: 60vw;
+  background-color: #1e1e1e;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: none;
+  /* margin-top: 16px; */
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden; /* Prevent editor content from overflowing */
+}
+
+.editor-header {
+  background-color: #2d2d2d;
+  padding: 0 12px; /* Reduced padding */
+  height: 32px; /* Fixed height */
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #404040;
+}
+
+.close-button {
+  color: #cccccc;
+  background: none;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: background-color 0.2s;
+  padding: 0; /* Remove padding */
+  margin: 2px 0; /* Small vertical margin to center */
+}
+
+.close-button:hover {
+  background-color: #404040;
+}
+
+.file-name {
+  color: #cccccc;
+  font-size: 13px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.editor-content {
+  padding: 16px;
+  max-height: 60vh;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.editor-content::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.editor-content::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+.editor-content::-webkit-scrollbar-thumb {
+  background-color: #424242;
+  border-radius: 6px;
+  border: 3px solid #1e1e1e;
+}
+
+.editor-content pre {
+  margin: 0;
+  white-space: pre-wrap; /* Allow text to wrap */
+  word-break: break-word; /* Break long words if necessary */
+}
+
+.editor-content code {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
