@@ -7,9 +7,9 @@ export const dataValidationCode = `{
     "# Social Media Stock Mentions Data Validation and Analysis\n",
     "\n",
     "This notebook explores the following data warehouse tables:\n",
-    "- \`social_posts\`: Contains information about social media posts\n",
-    "- \`stock_mentions\`: Contains mentions of stock tickers within posts\n",
-    "- \`trending_stocks_weekly\`: Contains weekly aggregated stock mention statistics"
+    "- \\`social_posts\\`: Contains information about social media posts\n",
+    "- \\`stock_mentions\\`: Contains mentions of stock tickers within posts\n",
+    "- \\`trending_stocks_weekly\\`: Contains weekly aggregated stock mention statistics"
    ]
   },
   {

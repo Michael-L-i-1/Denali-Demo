@@ -61,6 +61,43 @@ function ChatPagePipelineSteps() {
     }
   };
 
+  const renderNotebookCell = (cell) => {
+    if (cell.cell_type === 'markdown') {
+      return (
+        <div key={cell.execution_count} className="notebook-cell markdown">
+          <div dangerouslySetInnerHTML={{ __html: cell.source.join('').replace(/\n/g, '<br/>') }} />
+        </div>
+      );
+    } else if (cell.cell_type === 'code') {
+      return (
+        <div key={cell.execution_count} className="notebook-cell code">
+          <div className="cell-header">
+            <span className="cell-type">In [{cell.execution_count || ' '}]</span>
+          </div>
+          <div className="cell-content">
+            <pre>
+              <code className="language-python">{cell.source.join('')}</code>
+            </pre>
+          </div>
+          {cell.outputs && cell.outputs.length > 0 && (
+            <div className="cell-output">
+              {cell.outputs.map((output, index) => (
+                <div key={index}>
+                  {output.output_type === 'stream' ? (
+                    <pre>{output.text.join('')}</pre>
+                  ) : output.output_type === 'execute_result' ? (
+                    <div dangerouslySetInnerHTML={{ __html: output.data['text/html']?.join('') || output.data['text/plain']?.join('') }} />
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="chat-page">
       <div className="chat-side">
@@ -241,9 +278,17 @@ function ChatPagePipelineSteps() {
                 </button>
               </div>
               <div className="editor-content">
-                <pre>
-                  <code className="language-python">{dataValidationCode}</code>
-                </pre>
+                {(() => {
+                  try {
+                    // First, remove the template literal backticks and parse the JSON
+                    const jsonString = dataValidationCode.replace(/^`|`$/g, '');
+                    const notebook = JSON.parse(jsonString);
+                    return notebook.cells.map(cell => renderNotebookCell(cell));
+                  } catch (error) {
+                    console.error('Error parsing notebook:', error);
+                    return <div>Error loading notebook</div>;
+                  }
+                })()}
               </div>
             </div>
           </div>
