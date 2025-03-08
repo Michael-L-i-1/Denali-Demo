@@ -17,6 +17,8 @@ function ChatPagePipelineSteps() {
   const [activeSpinners, setActiveSpinners] = useState([]);
   const [completedItems, setCompletedItems] = useState([]);
   const [showActionRequired, setShowActionRequired] = useState(false);
+  const [activeView, setActiveView] = useState('pipeline');
+  const [openFiles, setOpenFiles] = useState([]);
 
   const processingTimes = [1,2,3,4,5]; // Time in seconds for each step
   const totalSteps = 9;
@@ -25,7 +27,7 @@ function ChatPagePipelineSteps() {
 
   useEffect(() => {
     Prism.highlightAll();
-  }, [activeTab]);
+  }, [activeView]);
 
   useEffect(() => {
     const totalItems = 9; // Total number of status items
@@ -42,6 +44,15 @@ function ChatPagePipelineSteps() {
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    // Add files to openFiles when they're viewed
+    if (activeView === 'code' && !openFiles.includes('twitter_extractor.py')) {
+      setOpenFiles([...openFiles, 'twitter_extractor.py']);
+    } else if (activeView === 'notebook' && !openFiles.includes('data_validation.ipynb')) {
+      setOpenFiles([...openFiles, 'data_validation.ipynb']);
+    }
+  }, [activeView]);
 
   const startPipelineExecution = () => {
     setTimeout(() => {
@@ -199,66 +210,82 @@ function ChatPagePipelineSteps() {
         </div>
       </div>
       <div className="visualization-side">
-        <div className="execution-plan">
-          <div className="etl-panel">
-            <div className="etl-status">
-              <div className="status-header">Execution Plan</div>
-              {[
-                {id: "sync-reddit", text: "Sync Reddit Data to S3 Data Lake with Airbyte"},
-                {id: "build-x-extractor", text: "Build Data Extractor for X API"},
-                {id: "sync-x", text: "Sync X Data to S3 Data Lake"},
-                {id: "load-snowflake", text: "Load Data From S3 into Snowflake"},
-                {id: "dbt-transform", text: "Data Cleaning and Transformation using dbt"},
-                {id: "data-validation", text: "Data Exploration and Validation"},
-                {id: "sentiment", text: "Perform Sentiment Analysis"},
-                {id: "productionize", text: "Productionize Pipeline"},
-                {id: "deploy", text: "Deploy Pipeline"}
-              ].map((item, index) => (
-                <div 
-                  key={item.id}
-                  className={`status-item in-progress ${index < visibleItems ? 'visible' : ''} ${
-                    completedItems.includes(index) ? 'completed' : ''
-                  }`}
-                  style={{
-                    opacity: index < visibleItems ? 1 : 0,
-                    transform: index < visibleItems ? 'translateY(0)' : 'translateY(10px)',
-                    transition: 'opacity 0.3s ease, transform 0.3s ease',
-                    cursor: 'pointer'
-                  }}
-                  onClick={() => {
-                    if (item.id === 'build-x-extractor') {
-                      document.querySelector('.code-editor').style.display = 'block';
-                      document.querySelector('.notebook-editor').style.display = 'none';
-                    } else if (item.id === 'data-validation') {
-                      document.querySelector('.code-editor').style.display = 'none';
-                      document.querySelector('.notebook-editor').style.display = 'block';
-                    } else {
-                      document.querySelector('.code-editor').style.display = 'none';
-                      document.querySelector('.notebook-editor').style.display = 'none';
-                    }
-                  }}
-                >
-                  <span className={`status-icon ${activeSpinners.includes(index) ? 'spinning' : ''}`}>
-                    {completedItems.includes(index) ? '✓' : '⟳'}
-                  </span>
-                  <span>{item.text}</span>
-                  {showActionRequired && item.id === 'data-validation' && (
-                    <span className="action-required">Action Required</span>
-                  )}
-                </div>
-              ))}
+        {activeView === 'pipeline' && (
+          <div className="execution-plan">
+            <div className="etl-panel">
+              <div className="etl-status">
+                <div className="status-header">Execution Plan</div>
+                {[
+                  {id: "sync-reddit", text: "Sync Reddit Data to S3 Data Lake with Airbyte"},
+                  {id: "build-x-extractor", text: "Build Data Extractor for X API"},
+                  {id: "sync-x", text: "Sync X Data to S3 Data Lake"},
+                  {id: "load-snowflake", text: "Load Data From S3 into Snowflake"},
+                  {id: "dbt-transform", text: "Data Cleaning and Transformation using dbt"},
+                  {id: "data-validation", text: "Data Exploration and Validation"},
+                  {id: "sentiment", text: "Perform Sentiment Analysis"},
+                  {id: "productionize", text: "Productionize Pipeline"},
+                  {id: "deploy", text: "Deploy Pipeline"}
+                ].map((item, index) => (
+                  <div 
+                    key={item.id}
+                    className={`status-item in-progress ${index < visibleItems ? 'visible' : ''} ${
+                      completedItems.includes(index) ? 'completed' : ''
+                    }`}
+                    style={{
+                      opacity: index < visibleItems ? 1 : 0,
+                      transform: index < visibleItems ? 'translateY(0)' : 'translateY(10px)',
+                      transition: 'opacity 0.3s ease, transform 0.3s ease',
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => {
+                      if (item.id === 'build-x-extractor') {
+                        setActiveView('code');
+                      } else if (item.id === 'data-validation') {
+                        setActiveView('notebook');
+                      }
+                    }}
+                  >
+                    <span className={`status-icon ${activeSpinners.includes(index) ? 'spinning' : ''}`}>
+                      {completedItems.includes(index) ? '✓' : '⟳'}
+                    </span>
+                    <span>{item.text}</span>
+                    {showActionRequired && item.id === 'data-validation' && (
+                      <span className="action-required">Action Required</span>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="code-editor" style={{display: 'none'}}>
+          </div>
+        )}
+
+        {activeView === 'code' && (
+          <div className="code-view">
+            <div className="view-header">
+              <button 
+                className="back-button"
+                onClick={() => setActiveView('pipeline')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--text-light)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '1rem',
+                }}
+              >
+                ← Back to Pipeline
+              </button>
+            </div>
+            <div className="code-editor" style={{ 
+              display: 'block',
+              width: '60vw',
+              margin: '1rem auto',
+            }}>
               <div className="editor-header">
                 <span className="file-name">twitter_extractor.py</span>
-                <button 
-                  className="close-button"
-                  onClick={() => {
-                    document.querySelector('.code-editor').style.display = 'none';
-                  }}
-                >
-                  ×
-                </button>
               </div>
               <div className="editor-content">
                 <pre>
@@ -266,22 +293,40 @@ function ChatPagePipelineSteps() {
                 </pre>
               </div>
             </div>
-            <div className="notebook-editor" style={{display: 'none'}}>
+          </div>
+        )}
+
+        {activeView === 'notebook' && (
+          <div className="notebook-view">
+            <div className="view-header">
+              <button 
+                className="back-button"
+                onClick={() => setActiveView('pipeline')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--text-light)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '1rem',
+                }}
+              >
+                ← Back to Pipeline
+              </button>
+            </div>
+            <div className="notebook-editor" style={{ 
+              display: 'block',
+              width: '60vw',
+              margin: '1rem auto',
+            }}>
               <div className="editor-header">
                 <span className="file-name">data_validation.ipynb</span>
-                <button 
-                  className="close-button"
-                  onClick={() => {
-                    document.querySelector('.notebook-editor').style.display = 'none';
-                  }}
-                >
-                  ×
-                </button>
               </div>
               <div className="editor-content">
                 {(() => {
                   try {
-                    // Import the JSON directly and render it
                     return dataValidationCode.cells.map(cell => renderNotebookCell(cell));
                   } catch (error) {
                     console.error('Error rendering notebook:', error);
@@ -291,49 +336,58 @@ function ChatPagePipelineSteps() {
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
       <div className="workspace-side" style={{ minWidth: '14vw' }}>
-          <div className="workspace-header">
-            <span>WORKSPACE</span>
-          </div>
-          <div className="workspace-explorer" style={{ display: 'none' }}>
-            <div className="folder">
-              <div className="folder-name">
-                <span className="folder-icon">📁</span>
-                data
-              </div>
-              <div className="file indented">
-                <span className="file-icon">📄</span>
-                raw_data.csv
-              </div>
-              <div className="file indented">
-                <span className="file-icon">📄</span>
-                processed_data.csv
-              </div>
-            </div>
-            <div className="folder">
-              <div className="folder-name">
-                <span className="folder-icon">📁</span>
-                models
-              </div>
-              <div className="file indented">
-                <span className="file-icon">📄</span>
-                sentiment_model.pkl
-              </div>
-            </div>
-            <div className="folder">
-              <div className="folder-name">
-                <span className="folder-icon">📁</span>
-                notebooks
-              </div>
-              <div className="file indented">
-                <span className="file-icon">📄</span>
-                analysis.ipynb
-              </div>
-            </div>
-          </div>
+        <div className="workspace-header">
+          <span>WORKSPACE</span>
         </div>
+        <div className="workspace-explorer">
+          {openFiles.length > 0 && (
+            <div className="open-files">
+              {openFiles.map(file => (
+                <div 
+                  key={file}
+                  className={`file ${
+                    (activeView === 'code' && file === 'twitter_extractor.py') ||
+                    (activeView === 'notebook' && file === 'data_validation.ipynb')
+                      ? 'active'
+                      : ''
+                  }`}
+                  onClick={() => {
+                    if (file === 'twitter_extractor.py') {
+                      setActiveView('code');
+                    } else if (file === 'data_validation.ipynb') {
+                      setActiveView('notebook');
+                    }
+                  }}
+                  style={{
+                    padding: '8px 12px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    backgroundColor: (activeView === 'code' && file === 'twitter_extractor.py') ||
+                                  (activeView === 'notebook' && file === 'data_validation.ipynb')
+                      ? 'var(--primary-dark)'
+                      : 'transparent',
+                    color: 'var(--text-light)',
+                    borderLeft: (activeView === 'code' && file === 'twitter_extractor.py') ||
+                              (activeView === 'notebook' && file === 'data_validation.ipynb')
+                      ? '2px solid var(--primary-green)'
+                      : '2px solid transparent',
+                  }}
+                >
+                  <span style={{ fontSize: '0.9rem' }}>
+                    {file === 'twitter_extractor.py' ? '📄' : '📓'}
+                  </span>
+                  {file}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
