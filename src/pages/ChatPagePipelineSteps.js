@@ -17,11 +17,22 @@ function ChatPagePipelineSteps() {
   const [activeSpinners, setActiveSpinners] = useState([]);
   const [completedItems, setCompletedItems] = useState([]);
   const [showActionRequired, setShowActionRequired] = useState(false);
+  const [showActionRequiredMessage, setShowActionRequiredMessage] = useState(false);
   const [activeView, setActiveView] = useState('pipeline');
   const [openFiles, setOpenFiles] = useState([]);
 
+  const [showXDataExtractor, setShowXDataExtractor] = useState(false);
+
+  // These are steps before data exploration and validation
   const processingTimes = [1,2,3,4,5]; // Time in seconds for each step
   const totalSteps = 9;
+
+  // These are steps after data exploration and validation
+  const processingTimesAfterValidation = [1,2,3]; // Time in seconds for each step
+
+  // Key Steps
+  const xDataExtractorStep = 1;
+
   const stopIndex = 5;
   const dataValidationStopTimer = 6;
 
@@ -57,6 +68,7 @@ function ChatPagePipelineSteps() {
   const startPipelineExecution = () => {
     setTimeout(() => {
       setShowActionRequired(true);
+      setShowActionRequiredMessage(true);
     }, dataValidationStopTimer * 1000);
 
     for (let i = 0; i < totalSteps; i++) {
@@ -68,8 +80,27 @@ function ChatPagePipelineSteps() {
         setTimeout(() => {
           setCompletedItems(prev => [...prev, i]);
           setActiveSpinners(prev => prev.filter(j => j !== i));
+
+          if (i === xDataExtractorStep) {
+            setShowXDataExtractor(true);
+          }
         }, timeInMs);
       }
+    }
+  };
+
+  const continuePipelineExecution = () => {
+    setShowActionRequired(false);
+    setCompletedItems(prev => [...prev, stopIndex]);
+    setActiveSpinners(prev => prev.filter(i => i !== stopIndex));
+    for (let i = stopIndex + 1; i < totalSteps; i++) {
+      setActiveSpinners(prev => [...prev, i]);
+      const timeInMs = processingTimesAfterValidation[i - stopIndex - 1] * 1000;
+
+      setTimeout(() => {
+        setCompletedItems(prev => [...prev, i]);
+        setActiveSpinners(prev => prev.filter(j => j !== i));
+      }, timeInMs);
     }
   };
 
@@ -177,7 +208,7 @@ function ChatPagePipelineSteps() {
               </button>
             </div>
           )}
-          {showActionRequired && (
+          {showActionRequiredMessage && (
             <div className="ai-message">
               <div className="message-content">
                 Data Exploration and Validation step requires your action to proceed. Please review and resolve.
@@ -186,6 +217,7 @@ function ChatPagePipelineSteps() {
                 className="confirm-button"
                 id="resolve-button"
                 onClick={() => {
+                  continuePipelineExecution();
                   const button = document.getElementById('resolve-button');
                   button.disabled = true;
                   button.textContent = 'Resolved';
@@ -199,6 +231,15 @@ function ChatPagePipelineSteps() {
               </button>
             </div>
           )}
+          {
+            (activeSpinners.length === 0 && completedItems.length === totalSteps && !showActionRequired) && (
+              <div className="ai-message">
+                <div className="message-content">
+                  The pipeline has been deployed successfully. Would you like me to do anything else?
+                </div>
+              </div>
+            )
+          }
         </div>
         <div className="chat-input-container">
           <input
