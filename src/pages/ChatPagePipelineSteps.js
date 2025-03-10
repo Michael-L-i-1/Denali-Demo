@@ -19,7 +19,6 @@ function ChatPagePipelineSteps() {
   const [showActionRequired, setShowActionRequired] = useState(false);
   const [showActionRequiredMessage, setShowActionRequiredMessage] = useState(false);
   const [activeView, setActiveView] = useState('pipeline');
-  const [openFiles, setOpenFiles] = useState([]);
 
   const [showXDataExtractor, setShowXDataExtractor] = useState(false);
 
@@ -55,15 +54,6 @@ function ChatPagePipelineSteps() {
 
     return () => clearInterval(interval);
   }, []);
-
-  useEffect(() => {
-    // Add files to openFiles when they're viewed
-    if (activeView === 'code' && !openFiles.includes('twitter_extractor.py')) {
-      setOpenFiles([...openFiles, 'twitter_extractor.py']);
-    } else if (activeView === 'notebook' && !openFiles.includes('data_validation.ipynb')) {
-      setOpenFiles([...openFiles, 'data_validation.ipynb']);
-    }
-  }, [activeView]);
 
   const startPipelineExecution = () => {
     setTimeout(() => {
@@ -384,47 +374,42 @@ function ChatPagePipelineSteps() {
           <span>WORKSPACE</span>
         </div>
         <div className="workspace-explorer">
-          {openFiles.length > 0 && (
-            <div className="open-files">
-              {openFiles.map(file => (
-                <div 
-                  key={file}
-                  className={`file ${
-                    (activeView === 'code' && file === 'twitter_extractor.py') ||
-                    (activeView === 'notebook' && file === 'data_validation.ipynb')
-                      ? 'active'
-                      : ''
-                  }`}
-                  onClick={() => {
-                    if (file === 'twitter_extractor.py') {
-                      setActiveView('code');
-                    } else if (file === 'data_validation.ipynb') {
-                      setActiveView('notebook');
-                    }
-                  }}
-                  style={{
-                    padding: '8px 12px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    backgroundColor: (activeView === 'code' && file === 'twitter_extractor.py') ||
-                                  (activeView === 'notebook' && file === 'data_validation.ipynb')
-                      ? 'var(--primary-dark)'
-                      : 'transparent',
-                    color: 'var(--text-light)',
-                    borderLeft: (activeView === 'code' && file === 'twitter_extractor.py') ||
-                              (activeView === 'notebook' && file === 'data_validation.ipynb')
-                      ? '2px solid var(--primary-green)'
-                      : '2px solid transparent',
-                  }}
-                >
-                  <span style={{ fontSize: '0.9rem' }}>
-                    {file === 'twitter_extractor.py' ? '📄' : '📓'}
-                  </span>
-                  {file}
-                </div>
-              ))}
+          {showXDataExtractor && (
+            <div 
+              className={`file ${activeView === 'code' ? 'active' : ''}`}
+              onClick={() => setActiveView('code')}
+              style={{
+                padding: '8px 12px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                backgroundColor: activeView === 'code' ? 'var(--primary-dark)' : 'transparent',
+                color: 'var(--text-light)',
+                borderLeft: activeView === 'code' ? '2px solid var(--primary-green)' : '2px solid transparent',
+              }}
+            >
+              <span style={{ fontSize: '0.9rem' }}>📄</span>
+              twitter_extractor.py
+            </div>
+          )}
+          {completedItems.length >= stopIndex && (
+            <div 
+              className={`file ${activeView === 'notebook' ? 'active' : ''}`}
+              onClick={() => setActiveView('notebook')}
+              style={{
+                padding: '8px 12px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                backgroundColor: activeView === 'notebook' ? 'var(--primary-dark)' : 'transparent',
+                color: 'var(--text-light)',
+                borderLeft: activeView === 'notebook' ? '2px solid var(--primary-green)' : '2px solid transparent',
+              }}
+            >
+              <span style={{ fontSize: '0.9rem' }}>📔</span>
+              data_validation.ipynb
             </div>
           )}
         </div>
