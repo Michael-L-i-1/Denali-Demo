@@ -303,8 +303,7 @@ function ChatPagePipelineSteps() {
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '1rem',
+                  marginTop: '1rem',
                 }}
               >
                 ← Back to Pipeline
@@ -313,12 +312,13 @@ function ChatPagePipelineSteps() {
             <div className="code-editor" style={{ 
               display: 'block',
               width: '60vw',
+              height: '90vh',
               margin: '1rem auto',
             }}>
               <div className="editor-header">
                 <span className="file-name">twitter_extractor.py</span>
               </div>
-              <div className="editor-content">
+              <div className="editor-content" style={{ maxHeight: '85vh' }}>
                 <pre>
                   <code className="language-python">{twitterExtractorCode}</code>
                 </pre>
@@ -340,8 +340,7 @@ function ChatPagePipelineSteps() {
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '1rem',
+                  marginTop: '1rem',
                 }}
               >
                 ← Back to Pipeline
@@ -350,12 +349,13 @@ function ChatPagePipelineSteps() {
             <div className="notebook-editor" style={{ 
               display: 'block',
               width: '60vw',
+              height: '90vh',
               margin: '1rem auto',
             }}>
               <div className="editor-header">
                 <span className="file-name">data_validation.ipynb</span>
               </div>
-              <div className="editor-content">
+              <div className="editor-content" style={{ maxHeight: '85vh' }}>
                 {(() => {
                   try {
                     return dataValidationCode.cells.map(cell => renderNotebookCell(cell));
